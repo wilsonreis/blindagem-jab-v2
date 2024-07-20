@@ -1,8 +1,9 @@
 package com.santander.kpv.config;
 
 
-import com.ibm.msg.client.jms.*;
 
+import com.ibm.mq.jms.JMSC;
+import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 import com.santander.kpv.exceptions.MyRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -75,23 +76,22 @@ public class MQTextMessageConfiguration {
         return mqChannel;
     }
 
-    @Bean("myJmsConnectionFactory")
-    public JmsConnectionFactory myJmsConnectionFactory() {
+    @Bean("myMQConnectionFactory")
+    public MQConnectionFactory  myMQConnectionFactory () {
         try {
-            JmsFactoryFactory jmsFactoryFactory = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER);
-            JmsConnectionFactory cf = jmsFactoryFactory.createConnectionFactory();
-            cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, getMqHostName());
-            cf.setIntProperty(WMQConstants.WMQ_PORT, getMqPort());
-            cf.setStringProperty(WMQConstants.WMQ_CHANNEL, getMqChannel());
-            cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, 1);
-            cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, getMqQueueManager());
-            cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_BINDINGS_THEN_CLIENT);
-            cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "KPV.BLINDAGEM");
-            cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true);
-            cf.setStringProperty(WMQConstants.USERID, getUser());
-            cf.setStringProperty(WMQConstants.PASSWORD, getPassword());
-            return cf;
-        } catch (JMSException e) {
+            MQConnectionFactory  myMQConnectionFactory = new MQConnectionFactory ();
+            myMQConnectionFactory.setHostName(this.getMqHostName());
+            myMQConnectionFactory.setPort(this.getMqPort());
+            myMQConnectionFactory.setQueueManager(this.getMqQueueManager());
+            myMQConnectionFactory.setChannel(this.getMqChannel());
+            myMQConnectionFactory.setCCSID(1208);
+            //myMQConnectionFactory.setTransportType(WMQConstants.WMQ_CM_CLIENT);
+            myMQConnectionFactory.setTransportType(JMSC.MQJMS_TP_CLIENT_MQ_TCPIP);
+            myMQConnectionFactory.setStringProperty(WMQConstants.USERID, "admin");
+            myMQConnectionFactory.setStringProperty(WMQConstants.PASSWORD, "passw0rd");
+            log.info("Sucesso ao conectar na fila");
+            return myMQConnectionFactory;
+        } catch (Exception e) {
             throw new MyRuntimeException(e);
         }
     }

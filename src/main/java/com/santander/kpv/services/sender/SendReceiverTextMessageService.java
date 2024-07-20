@@ -1,7 +1,7 @@
 package com.santander.kpv.services.sender;
 
 import javax.jms.DeliveryMode;
-
+import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.ibm.msg.client.jms.JmsConnectionFactory;
 import com.santander.kpv.exceptions.MyRuntimeException;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @Slf4j
 public class SendReceiverTextMessageService {
 
-    private JmsConnectionFactory myJmsConnectionFactory;
+    private MQConnectionFactory myMQConnectionFactory;
     private  JMSContext jmsContext;
     private  Destination queueRequest;
     private  Destination queueResponse;
@@ -33,8 +33,8 @@ public class SendReceiverTextMessageService {
         this.jmsExpiration = jmsExpiration;
     }
 
-    public SendReceiverTextMessageService(JmsConnectionFactory myJmsConnectionFactory) {
-        this.myJmsConnectionFactory = myJmsConnectionFactory;
+    public SendReceiverTextMessageService(MQConnectionFactory  myMQConnectionFactory) {
+        this.myMQConnectionFactory = myMQConnectionFactory;
     }
 
     public String enviaRecebeMensagensSFH(String cpf, String sfh) throws JMSException {
@@ -49,7 +49,7 @@ public class SendReceiverTextMessageService {
     public String enviaRecebeMensagens(String mensagem)  {
         try {
             if (null == jmsContext) {
-                this.jmsContext = myJmsConnectionFactory.createContext();
+                this.jmsContext = myMQConnectionFactory.createContext();
                 System.out.println("Instanciou jmsContext");
             }
         } catch (Exception e) {
