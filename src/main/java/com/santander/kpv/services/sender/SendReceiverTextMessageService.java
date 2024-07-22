@@ -9,6 +9,7 @@ import com.santander.kpv.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jms.*;
 import java.util.UUID;
@@ -46,6 +47,7 @@ public class SendReceiverTextMessageService {
         return enviaRecebeMensagens(sfhRetornado);
     }
 
+    @Transactional
     public String enviaRecebeMensagens(String mensagem)  {
         try {
             if (null == jmsContext) {
