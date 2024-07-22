@@ -84,7 +84,6 @@ public class SendReceiverTextMessageService {
         if (null == queueRequest) {
             this.queueRequest = jmsContext.createQueue(queueRequestNome);
             this.queueResponse = jmsContext.createQueue(queueResponseNome);
-            System.out.println("Instanciou filas");
         }
         JMSProducer producer = jmsContext.createProducer();
         producer.send(queueRequest, message);
