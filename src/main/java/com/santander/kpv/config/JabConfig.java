@@ -41,6 +41,7 @@ public class JabConfig {
             mqQueueConnectionFactory.setQueueManager(this.getMqQueueManager());
             mqQueueConnectionFactory.setChannel(this.getMqChannel());
             mqQueueConnectionFactory.setCCSID(1208);
+            mqQueueConnectionFactory.setAppName("kpv.blindagem");
             mqQueueConnectionFactory.setTransportType(CommonConstants.WMQ_CM_CLIENT);
             mqQueueConnectionFactory.setStringProperty(CommonConstants.USERID, "admin");
             mqQueueConnectionFactory.setStringProperty(CommonConstants.PASSWORD, "passw0rd");

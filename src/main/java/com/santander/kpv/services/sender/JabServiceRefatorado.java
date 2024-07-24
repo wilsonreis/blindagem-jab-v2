@@ -1,25 +1,29 @@
 package com.santander.kpv.services.sender;
-
 import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.santander.kpv.exceptions.MyRuntimeException;
+import com.santander.kpv.utils.ExtendedMessageCreator;
 import com.santander.kpv.utils.Generated;
+import com.santander.kpv.utils.SuccessMessageCreator;
 import jakarta.jms.*;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Slf4j
 @Generated
-public class JabService {
+public class JabServiceRefatorado {
 
     private MQQueueConnectionFactory mqQueueConnectionFactory;
     private JMSContext jmsContext;
     private Destination queueRequest;
     private Destination queueResponse;
+    private JmsTemplate myTemplate;
 
     @Value("${ibm.mq.queueRequest}")
     private String queueRequestNome;
@@ -34,8 +38,9 @@ public class JabService {
         this.jmsExpiration = jmsExpiration;
     }
 
-    public JabService(MQQueueConnectionFactory mqQueueConnectionFactory) {
+    public JabServiceRefatorado(MQQueueConnectionFactory mqQueueConnectionFactory, JmsTemplate myTemplate) {
         this.mqQueueConnectionFactory = mqQueueConnectionFactory;
+        this.myTemplate =  myTemplate;
     }
 
     @Transactional
@@ -45,21 +50,15 @@ public class JabService {
                 this.jmsContext = mqQueueConnectionFactory.createContext();
                 log.info("Instanciou jmsContext");
             }
-            if (null == queueRequest) {
-                this.queueRequest = jmsContext.createQueue(queueRequestNome);
-                this.queueResponse = jmsContext.createQueue(queueResponseNome);
-                log.info("Instanciou filas");
-            }
-
         } catch (Exception e) {
             log.info("enviaRecebeMensagens 1 : [{}]", e.getMessage());
             throw new MyRuntimeException(e.getMessage(), e);
         }
-        TextMessage message = jmsContext.createTextMessage(mensagem);
+        //nova implementação
+        Message message = this.enviaMensagemRefatorada(mensagem);
+
         String receivedMessage = "Erro ao receber mensagem";
         try {
-            configureMessage(message);
-            sendMessage(message);
             receivedMessage = receiveMessage(message);
         } catch (Exception e) {
             log.info("enviaRecebeMensagens 2 - TextMessage: [{}]", e.getMessage());
@@ -69,9 +68,8 @@ public class JabService {
         return receivedMessage;
     }
 
-    private void configureMessage(TextMessage message)  {
+    private void configureMessage(Message msg)  {
         try {
-            Message msg = (message);
             msg.setJMSExpiration(jmsExpiration);
             msg.setJMSCorrelationID(UUID.randomUUID().toString());
             log.info("setJMSCorrelationID(UUID.randomUUID().toString()) {}", msg.getJMSCorrelationID());
@@ -86,13 +84,18 @@ public class JabService {
 
     }
 
-    private void sendMessage(TextMessage message) {
-        jakarta.jms.JMSProducer producer = jmsContext.createProducer();
+    private void sendMessage(Message message) {
+        if (null == queueRequest) {
+            this.queueRequest = jmsContext.createQueue(queueRequestNome);
+            this.queueResponse = jmsContext.createQueue(queueResponseNome);
+            log.info("Instanciou filas");
+        }
+        JMSProducer producer = jmsContext.createProducer();
         producer.send(queueRequest, message);
         log.info("Mensagem enviada para a fila de requisição");
     }
 
-    private String receiveMessage(TextMessage message)  {
+    private String receiveMessage(Message message)  {
         String receivedMessage = "";
         String messageSelector = "";
         JMSConsumer consumer = jmsContext.createConsumer(queueResponse, messageSelector);
@@ -114,4 +117,33 @@ public class JabService {
         }
         return receivedMessage;
     }
+
+    //nova implementação
+    private Message sendTextMessage(final String msg) throws JMSException {
+
+        ExtendedMessageCreator<TextMessage> creator = new ExtendedMessageCreator<TextMessage>() {
+            public void setParams(TextMessage message) throws JMSException {
+                message.setText(msg);
+            }
+        };
+        return this.enviaMensagemJMSTemplate(creator);
+    }
+
+    //nova implementação
+    private Message enviaMensagemJMSTemplate(ExtendedMessageCreator<TextMessage> creator) {
+        this.queueRequest = jmsContext.createQueue(queueRequestNome);
+        this.queueResponse = jmsContext.createQueue(queueResponseNome);
+        this.myTemplate.send(this.queueRequest, creator);
+        return creator.getMessage();
+    }
+
+    private Message enviaMensagemRefatorada(String messageContent) {
+        this.queueRequest = jmsContext.createQueue(queueRequestNome);
+        this.queueResponse = jmsContext.createQueue(queueResponseNome);
+        SuccessMessageCreator messageCreator = new SuccessMessageCreator(messageContent, jmsExpiration, (Queue) queueResponse);
+        configureMessage(messageCreator.getMessage());
+        myTemplate.send(queueRequest, messageCreator);
+        return messageCreator.getMessage();
+    }
 }
+
