@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
+import jakarta.jms.*;
 
 @Configuration
 @EnableJms
@@ -59,8 +60,10 @@ public class JabConfig {
         jmsTemplate.setDestinationResolver(new ResolverUtils());
         jmsTemplate.setReceiveTimeout(getJmsExpiration());
         jmsTemplate.setConnectionFactory(mqQueueConnectionFactory);
+        jmsTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         return jmsTemplate;
     }
+
 
     public String getMqHostName() {
         return mqHostName;
