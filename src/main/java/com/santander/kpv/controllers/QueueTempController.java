@@ -3,7 +3,6 @@ package com.santander.kpv.controllers;
 
 import com.santander.kpv.exceptions.MyRuntimeException;
 import com.santander.kpv.services.sender.SendReplyQueueTempService;
-import com.santander.kpv.services.sender.SendReplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

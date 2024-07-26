@@ -29,7 +29,7 @@ public class BlindagemController {
     @PostMapping(
             value = "/blindagemFinalV1",
             consumes = MediaType.TEXT_PLAIN_VALUE,
-            produces = MediaType.TEXT_PLAIN_VALUE)
+            produces = MediaType.ALL_VALUE)
     public ResponseEntity<String> blindagem(@RequestBody String message) {
         try {
             log.info("blindagemFinalV1 - mensagem recebida = [{}]", message);

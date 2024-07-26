@@ -58,9 +58,9 @@ public class JabService {
         TextMessage message = jmsContext.createTextMessage(mensagem);
         String receivedMessage = "Erro ao receber mensagem";
         try {
-            configureMessage(message);
+            String messageSelector =  configureMessage(message);
             sendMessage(message);
-            receivedMessage = receiveMessage(message);
+            receivedMessage = receiveMessage(message, messageSelector);
         } catch (Exception e) {
             log.info("enviaRecebeMensagens 2 - TextMessage: [{}]", e.getMessage());
             log.error("Erro inesperado", e.getMessage());
@@ -69,15 +69,17 @@ public class JabService {
         return receivedMessage;
     }
 
-    private void configureMessage(TextMessage message)  {
+    private String configureMessage(TextMessage message)  {
         try {
+            String uuid = UUID.randomUUID().toString();
             Message msg = (message);
             msg.setJMSExpiration(jmsExpiration);
-            msg.setJMSCorrelationID(UUID.randomUUID().toString());
-            log.info("setJMSCorrelationID(UUID.randomUUID().toString()) {}", msg.getJMSCorrelationID());
+            msg.setJMSCorrelationID(uuid);
+            log.info("setJMSCorrelationID(UUID.randomUUID().toString()) {}", uuid);
             msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
             msg.setJMSReplyTo(queueResponse);
             msg.setIntProperty(WMQConstants.WMQ_TARGET_CLIENT, WMQConstants.WMQ_CLIENT_NONJMS_MQ);
+            return "JMSCorrelationID = '" + uuid + "'";
         } catch (Exception e) {
             log.info("configureMessage : [{}]", e.getMessage());
             log.error("Erro configureMessage", e.getMessage());
@@ -92,9 +94,8 @@ public class JabService {
         log.info("Mensagem enviada para a fila de requisição");
     }
 
-    private String receiveMessage(TextMessage message)  {
+    private String receiveMessage(TextMessage message, String messageSelector)  {
         String receivedMessage = "";
-        String messageSelector = "";
         JMSConsumer consumer = jmsContext.createConsumer(queueResponse, messageSelector);
         try {
             messageSelector = "JMSCorrelationID = '" + message.getJMSCorrelationID() + "'";

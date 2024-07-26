@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 @Generated
 @Slf4j
-public class SendReplyService {
+public class SendReplyServiceV1 {
     @Autowired
     private JmsTemplate myTemplate;
     @Autowired
@@ -36,7 +36,7 @@ public class SendReplyService {
     @Value("${ibm.mq.jmsExpiration}")
     private long jmsExpiration;
 
-    public SendReplyService(JmsTemplate myTemplate, MQQueueConnectionFactory mqQueueConnectionFactory) {
+    public SendReplyServiceV1(JmsTemplate myTemplate, MQQueueConnectionFactory mqQueueConnectionFactory) {
         this.myTemplate = myTemplate;
         this.mqQueueConnectionFactory = mqQueueConnectionFactory;
         log.info("myTemplate.getClass().getName() [{}]", myTemplate.getClass().getName());
