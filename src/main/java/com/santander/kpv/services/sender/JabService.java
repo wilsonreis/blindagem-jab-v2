@@ -96,9 +96,9 @@ public class JabService {
 
     private String receiveMessage(TextMessage message, String messageSelector)  {
         String receivedMessage = "";
+        log.info("messageSelector [{}]", messageSelector);
         JMSConsumer consumer = jmsContext.createConsumer(queueResponse, messageSelector);
         try {
-            messageSelector = "JMSCorrelationID = '" + message.getJMSCorrelationID() + "'";
             receivedMessage = consumer.receiveBody(String.class, 15000);
             if (receivedMessage == null) {
                 log.info("Tempo de espera expirou sem receber mensagem");

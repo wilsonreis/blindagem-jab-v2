@@ -140,7 +140,7 @@ public class JabServiceRefatorado {
     private Message enviaMensagemRefatorada(String messageContent) {
         this.queueRequest = jmsContext.createQueue(queueRequestNome);
         this.queueResponse = jmsContext.createQueue(queueResponseNome);
-        SuccessMessageCreator messageCreator = new SuccessMessageCreator(messageContent, jmsExpiration, (Queue) queueResponse);
+        SuccessMessageCreator messageCreator = new SuccessMessageCreator(messageContent, 10000, (Queue) queueResponse, "uuid");
         configureMessage(messageCreator.getMessage());
         myTemplate.send(queueRequest, messageCreator);
         return messageCreator.getMessage();

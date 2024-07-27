@@ -53,6 +53,7 @@ public class SendReplyQueueTempService {
                                 jmsmsg.setJMSCorrelationID(UUID.randomUUID().toString());
                                 jmsmsg.setJMSDeliveryMode(DeliveryMode.PERSISTENT);
                                 //jmsmsg.setJMSReplyTo(session.createQueue(queueResponse));
+                                //Queue replyQueue = session.createQueue(queueResponse);
                                 jmsmsg.setJMSReplyTo(responseQueue);
                                 jmsmsg.setIntProperty(
                                         WMQConstants.WMQ_TARGET_CLIENT, WMQConstants.WMQ_CLIENT_NONJMS_MQ);

@@ -57,7 +57,7 @@ public class JabConfig {
     public JmsTemplate myTemplate(MQQueueConnectionFactory mqQueueConnectionFactory) {
         JmsTemplate jmsTemplate = new JmsTemplate(mqQueueConnectionFactory);
         jmsTemplate.setPriority(1);
-        jmsTemplate.setDestinationResolver(new ResolverUtils());
+        //jmsTemplate.setDestinationResolver(new ResolverUtils());
         jmsTemplate.setReceiveTimeout(getJmsExpiration());
         jmsTemplate.setConnectionFactory(mqQueueConnectionFactory);
         jmsTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
