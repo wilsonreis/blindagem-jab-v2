@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class MessagingService {
+public class MessagingV2Service {
 
     @Autowired
     @Qualifier("myTemplate")
@@ -42,21 +42,22 @@ public class MessagingService {
             System.out.println("correlationId:" + correlationID);
             //Message requestMessagePos = messageCreator.getMessage();
 
+
             // Set up the consumer to receive the response
             String selector = "JMSCorrelationID = '" + correlationID + "'";
-            //MessageConsumer consumer = session.createConsumer(responseQueue, selector);
-            MessageConsumer consumer = session.createConsumer(responseQueue,selector );
 
-            // Start the connection to receive the message
-            connection.start();
-            Message responseMessage = consumer.receive(jmsTemplate.getReceiveTimeout());
-            System.out.println("responseMessage.getJMSCorrelationID():" + responseMessage.getJMSCorrelationID());
-
+            //refatorando o retorno
+            TextMessage responseMessage = (TextMessage) jmsTemplate.receiveSelected(responseQueue, selector);
             if (responseMessage != null) {
-                return ((TextMessage) responseMessage).getText();
-            } else {
-                throw new JMSException("No response received within the timeout period");
+                try {
+                    System.out.println("correlationId recebido :" + selector);
+                    return responseMessage.getText();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
             }
+            return "Timeout de novo";
+
         } catch (JMSException e) {
             log.error("Error in sendAndReceiveMessage: {}", e.getMessage());
             throw e;

@@ -1,4 +1,4 @@
-package com.santander.kpv.services;
+package com.santander.kpv.services.sender;
 
 import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory;
 import com.santander.kpv.utils.SuccessMessageCreator;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class MessagingService {
+public class MessagingBackupService {
 
     @Autowired
     @Qualifier("myTemplate")

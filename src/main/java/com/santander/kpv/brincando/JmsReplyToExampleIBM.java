@@ -17,12 +17,16 @@ public class JmsReplyToExampleIBM {
         connectionFactory.setQueueManager("QM1");
         connectionFactory.setChannel("DEV.ADMIN.SVRCONN");
         connectionFactory.setTransportType(WMQConstants.WMQ_CM_CLIENT);
+        connectionFactory.setCCSID(1208);
+
+
 
         // Criação da conexão e sessão
         try (QueueConnection connection = (QueueConnection) connectionFactory.createConnection("admin", "passw0rd")) {
             QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue requestQueue = session.createQueue("queue:///DEV.QUEUE.1");
             Queue replyQueue = session.createQueue("queue:///DEV.QUEUE.2");
+
 
             // Criação do produtor de mensagens
             MessageProducer producer = session.createProducer(requestQueue);
@@ -34,6 +38,7 @@ public class JmsReplyToExampleIBM {
             TextMessage requestMessage = session.createTextMessage("Hello, JMS!");
             requestMessage.setJMSReplyTo(replyQueue);
             requestMessage.setJMSCorrelationID(correlationId);
+            requestMessage.setJMSDeliveryMode(2);
             producer.send(requestMessage);
             System.out.println("Message sent to DEV.QUEUE.1 with ReplyTo set to DEV.QUEUE.2 and CorrelationID: " + correlationId);
 
@@ -41,7 +46,7 @@ public class JmsReplyToExampleIBM {
             // Aqui estamos simulando isso na mesma aplicação para simplicidade
             MessageConsumer requestConsumer = session.createConsumer(requestQueue);
             Message receivedRequestMessage = requestConsumer.receive(5000); // Timeout de 5 segundos
-
+            System.out.println(receivedRequestMessage);
             if (receivedRequestMessage == null) {
                 System.out.println("No message received from DEV.QUEUE.1 within the given timeout.");
                 return;

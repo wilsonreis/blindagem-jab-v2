@@ -42,6 +42,7 @@ public class JabConfig {
             mqQueueConnectionFactory.setQueueManager(this.getMqQueueManager());
             mqQueueConnectionFactory.setChannel(this.getMqChannel());
             mqQueueConnectionFactory.setCCSID(1208);
+            mqQueueConnectionFactory.setClientReconnectTimeout(5000);
             mqQueueConnectionFactory.setAppName("kpv.blindagem");
             mqQueueConnectionFactory.setTransportType(CommonConstants.WMQ_CM_CLIENT);
             mqQueueConnectionFactory.setStringProperty(CommonConstants.USERID, "admin");

@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 @Service
 @Generated
 @Slf4j
-public class SendReplyServiceV3 {
+public class SendReplyServiceV2AntesBrowser {
     @Autowired
     private JmsTemplate myTemplate;
     @Autowired
@@ -35,7 +35,7 @@ public class SendReplyServiceV3 {
     @Value("${ibm.mq.jmsExpiration}")
     private long jmsExpiration;
 
-    public SendReplyServiceV3(JmsTemplate myTemplate, MQQueueConnectionFactory mqQueueConnectionFactory) {
+    public SendReplyServiceV2AntesBrowser(JmsTemplate myTemplate, MQQueueConnectionFactory mqQueueConnectionFactory) {
         this.myTemplate = myTemplate;
         this.mqQueueConnectionFactory = mqQueueConnectionFactory;
         log.info("myTemplate.getClass().getName() [{}]", myTemplate.getClass().getName());
