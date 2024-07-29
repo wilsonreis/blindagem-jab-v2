@@ -1,6 +1,7 @@
 package com.santander.kpv.services;
 
 import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory;
+import com.santander.kpv.utils.QueueBrowserUtils;
 import com.santander.kpv.utils.SuccessMessageCreator;
 import jakarta.jms.*;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class MessagingV3Service {
 
             // Set up the consumer to receive the response
             String selector = "JMSCorrelationID = '" + correlationID + "'";
-
+/*
             QueueBrowser browser = session.createBrowser(responseQueue);
             Enumeration messages = browser.getEnumeration();
             while (messages.hasMoreElements()) {
@@ -65,8 +66,8 @@ public class MessagingV3Service {
             }
 
             browser.close();
-
-
+*/
+            selector = QueueBrowserUtils.extracted(session,responseQueue, correlationID);
             //refatorando o retorno
             TextMessage responseMessage = (TextMessage) jmsTemplate.receiveSelected(responseQueue, selector);
             if (responseMessage != null) {
