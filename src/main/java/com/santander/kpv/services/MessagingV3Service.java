@@ -1,7 +1,7 @@
 package com.santander.kpv.services;
 
 import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory;
-import com.santander.kpv.utils.QueueBrowserUtils;
+import com.santander.kpv.exceptions.MyRuntimeException;
 import com.santander.kpv.utils.SuccessMessageCreator;
 import jakarta.jms.*;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,8 @@ public class MessagingV3Service {
         QueueConnection connection = null;
         QueueSession session = null;
         long timeToLive = 10 * 60 * 60 * 1000;
+        String mensagemRetorno = "não achei mensagem";
+        boolean achou = false;
         try {
             connection = mqQueueConnectionFactory.createQueueConnection();
             session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -50,15 +52,23 @@ public class MessagingV3Service {
 
             // Set up the consumer to receive the response
             String selector = "JMSCorrelationID = '" + correlationID + "'";
-/*
+            try {
+                Thread.sleep(3000);
+            } catch (Exception e){
+                new MyRuntimeException(e);
+            }
             QueueBrowser browser = session.createBrowser(responseQueue);
             Enumeration messages = browser.getEnumeration();
             while (messages.hasMoreElements()) {
                 Message message = (Message) messages.nextElement();
                 if (message.getJMSCorrelationID().contains("blindagem")) {
-                    if (correlationID.equals(message.getJMSCorrelationID())) {
+                    String comparacao = message.getJMSCorrelationID();
+                    if (correlationID.equals(comparacao)) {
                         System.out.println("message.getJMSCorrelationID() achou : " + message.getJMSCorrelationID());
+                        achou = true;
+                        mensagemRetorno = message.getBody(String.class);
                         browser.close();
+                        break;
                     } else {
                         System.out.println("message.getJMSCorrelationID() não achou : " + message.getJMSCorrelationID());
                     }
@@ -66,8 +76,10 @@ public class MessagingV3Service {
             }
 
             browser.close();
-*/
-            selector = QueueBrowserUtils.extracted(session,responseQueue, correlationID);
+            if (achou){
+                return mensagemRetorno;
+            }
+
             //refatorando o retorno
             TextMessage responseMessage = (TextMessage) jmsTemplate.receiveSelected(responseQueue, selector);
             if (responseMessage != null) {
