@@ -76,22 +76,7 @@ public class MessagingV3Service {
             }
 
             browser.close();
-            if (achou){
-                return mensagemRetorno;
-            }
-
-            //refatorando o retorno
-            TextMessage responseMessage = (TextMessage) jmsTemplate.receiveSelected(responseQueue, selector);
-            if (responseMessage != null) {
-                try {
-                    System.out.println("correlationId recebido :" + selector);
-                    return responseMessage.getText();
-                } catch (JMSException e) {
-                    e.printStackTrace();
-                }
-            }
-            return "Timeout de novo";
-
+            return mensagemRetorno;
         } catch (JMSException e) {
             log.error("Error in sendAndReceiveMessage: {}", e.getMessage());
             throw e;

@@ -4,6 +4,7 @@ import com.santander.kpv.exceptions.MyRuntimeException;
 import com.santander.kpv.services.MessagingService;
 import com.santander.kpv.services.MessagingV2Service;
 import com.santander.kpv.services.MessagingV3Service;
+import com.santander.kpv.utils.IBMQueueBrowserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,7 @@ public class MessagingController {
     }
     @GetMapping("/messagingV3XML")
     public ResponseEntity<String> sendAndReceiveV3(@RequestParam(value = "xml") String xml) throws jakarta.jms.JMSException {
+        IBMQueueBrowserUtils.rastreiaFila2("DEV.QUEUE.2");
         String response = messagingV3Service.sendAndReceiveMessage(xml);
         if (response != null) {
             return ResponseEntity.ok("Received response: " + response);

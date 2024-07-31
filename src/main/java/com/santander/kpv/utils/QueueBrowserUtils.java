@@ -5,9 +5,7 @@ import jakarta.jms.*;
 import java.util.Enumeration;
 
 public class QueueBrowserUtils {
-    public static synchronized String extracted(QueueSession session, Queue responseQueue, String correlationID) throws JMSException {
-        boolean achou = false;
-        String mensagemRetorno = "nao achou";
+    private static boolean extracted(QueueSession session, Queue responseQueue, String correlationID, boolean achou, String mensagemRetorno) throws JMSException {
         QueueBrowser browser = session.createBrowser(responseQueue);
         Enumeration messages = browser.getEnumeration();
         while (messages.hasMoreElements()) {
@@ -28,12 +26,10 @@ public class QueueBrowserUtils {
 
         browser.close();
         if (achou){
-            return mensagemRetorno;
-        } else  {
-            return null;
+            return true;
         }
+        return false;
     }
-
     private QueueBrowserUtils() {
     }
 }
