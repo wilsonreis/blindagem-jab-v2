@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<replyMsg>
+    <dse_status>OK</dse_status>
+    <dse_resultData>
+        <kColl id="outputData">
+            <kColl id="errores"/>
+            <kColl id="avisos"/>
+            <iColl id="listDataSHF8">
+                <kColl>
+                    <field id="DC_FORMATO" value="SHMPF8"/>
+                    <field id="NRCPFCN" value="044444"/>
+                    <field id="PECODPR" value="24tt"/>
+                    <field id="PERELDE" value=""/>
+                    <field id="PROFISS" value="2970"/>
+                    <field id="CODERRO" value="00"/>
+                    <field id="MSGERRO" value=""/>
+                </kColl>
+            </iColl>
+        </kColl>
+    </dse_resultData>
+</replyMsg>
+
